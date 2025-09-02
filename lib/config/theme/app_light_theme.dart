@@ -18,6 +18,10 @@ class AppLightTheme {
 
   static ThemeData _buildTheme(BuildContext context) {
     return ThemeData(
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Colors.green[200],
+      ),
+      appBarTheme: AppBarTheme(backgroundColor: Colors.green[200]),
       brightness: Brightness.light,
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: <TargetPlatform, PageTransitionsBuilder>{

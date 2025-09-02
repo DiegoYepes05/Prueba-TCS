@@ -8,6 +8,11 @@ import 'package:prueba_tcs/features/auth/domain/repositories/auth_repositories.d
 import 'package:prueba_tcs/features/auth/infrastructure/datasources/auth_datasource_impl.dart';
 import 'package:prueba_tcs/features/auth/infrastructure/repositories/auth_repositories_impl.dart';
 import 'package:prueba_tcs/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:prueba_tcs/features/create_reports/domain/datasources/create_reports_datasource.dart';
+import 'package:prueba_tcs/features/create_reports/domain/repositories/create_reports_repository.dart';
+import 'package:prueba_tcs/features/create_reports/infrastructure/datasources/create_reports_datasource_impl.dart';
+import 'package:prueba_tcs/features/create_reports/infrastructure/repositories/create_reports_repository_impl.dart';
+import 'package:prueba_tcs/features/create_reports/presentation/bloc/create_reports_bloc.dart';
 import 'package:prueba_tcs/features/features.dart';
 import 'package:prueba_tcs/features/home/domain/datasources/home_datasource.dart';
 import 'package:prueba_tcs/features/home/domain/repositories/home_repository.dart';
@@ -22,6 +27,9 @@ void serviceLocatorInit() {
   sl.registerLazySingleton<AuthDatasource>(() => AuthDatasourceImpl());
   sl.registerLazySingleton<AppDatasource>(() => AppDatasourceImpl());
   sl.registerLazySingleton<HomeDatasource>(() => HomeDatasourceImpl());
+  sl.registerLazySingleton<CreateReportsDataSource>(
+    () => CreateReportsDataSourceImpl(),
+  );
 
   // Repositories
   sl.registerLazySingleton<AuthRepositories>(
@@ -33,6 +41,10 @@ void serviceLocatorInit() {
   sl.registerLazySingleton<HomeRepository>(
     () => HomeRepositoryImpl(datasource: sl<HomeDatasource>()),
   );
+  sl.registerLazySingleton<CreateReportsRepository>(
+    () =>
+        CreateReportsRepositoryImpl(dataSource: sl<CreateReportsDataSource>()),
+  );
 
   // Bloc
   sl.registerLazySingleton<AppBloc>(
@@ -43,5 +55,11 @@ void serviceLocatorInit() {
   );
   sl.registerFactory<AuthBloc>(
     () => AuthBloc(authRepository: sl<AuthRepositories>()),
+  );
+
+  sl.registerFactory<CreateReportsBloc>(
+    () => CreateReportsBloc(
+      createReportsRepository: sl<CreateReportsRepository>(),
+    ),
   );
 }

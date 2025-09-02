@@ -2,6 +2,7 @@ import 'package:animated_segmented_tab_control/animated_segmented_tab_control.da
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:prueba_tcs/features/home/domain/entities/report_entity.dart';
 import 'package:prueba_tcs/features/home/presentation/bloc/home_bloc.dart';
 import 'package:prueba_tcs/features/reports/presentation/screens/reports_screen.dart';
@@ -31,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen>
       create: (BuildContext context) => sl<HomeBloc>()..add(GetReports()),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.green[200],
           title: const Text('Reportes', style: TextStyle(color: Colors.white)),
           actions: <Widget>[
             IconButton(
@@ -133,8 +133,16 @@ class _HomeScreenState extends State<HomeScreen>
             ),
         floatingActionButton: FloatingActionButton.extended(
           elevation: 0,
-          backgroundColor: Colors.green[200],
-          onPressed: () {},
+          onPressed: () {
+            switch (tabController.index) {
+              case 0:
+                context.push('/home/create/0');
+                break;
+              case 1:
+                context.push('/home/create/1');
+                break;
+            }
+          },
           label: const Text('Crear', style: TextStyle(color: Colors.white)),
           icon: const Icon(Icons.add, color: Colors.white),
         ),

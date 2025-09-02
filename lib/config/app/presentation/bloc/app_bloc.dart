@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:prueba_tcs/config/app/domain/repositories/app_repository.dart';
 
 part 'app_event.dart';
@@ -20,7 +20,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   StreamSubscription<User?>? _subscription;
 
   void _onGetUser(GetUser event, Emitter<AppState> emit) {
-    _subscription?.cancel();
+    emit(state.copyWith(authStatus: AuthStatus.initial));
     _subscription = _appRepository.authStatus().listen((User? user) {
       add(AuthStatusChanged(user));
     });
