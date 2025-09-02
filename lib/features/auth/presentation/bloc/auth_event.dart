@@ -4,7 +4,7 @@ abstract class AuthEvent extends Equatable {
   const AuthEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class AuthLoginRequested extends AuthEvent {
@@ -14,7 +14,7 @@ class AuthLoginRequested extends AuthEvent {
   const AuthLoginRequested({required this.email, required this.password});
 
   @override
-  List<Object?> get props => [email, password];
+  List<Object?> get props => <Object?>[email, password];
 }
 
 class AuthRegisterRequested extends AuthEvent {
@@ -24,5 +24,5 @@ class AuthRegisterRequested extends AuthEvent {
   const AuthRegisterRequested({required this.email, required this.password});
 
   @override
-  List<Object?> get props => [email, password];
+  List<Object?> get props => <Object?>[email, password];
 }

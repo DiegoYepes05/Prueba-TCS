@@ -1,14 +1,14 @@
-// features/auth/presentation/bloc/auth_bloc.dart
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prueba_tcs/features/auth/domain/repositories/auth_repositories.dart';
-import 'auth_event.dart';
-import 'auth_state.dart';
+import 'package:prueba_tcs/features/auth/presentation/bloc/auth_event.dart';
+import 'package:prueba_tcs/features/auth/presentation/bloc/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final AuthRepositories authRepository;
+  final AuthRepositories _authRepository;
 
-  AuthBloc({required this.authRepository}) : super(AuthInitial()) {
+  AuthBloc({required AuthRepositories authRepository})
+    : _authRepository = authRepository,
+      super(AuthInitial()) {
     on<AuthLoginRequested>(_onAuthLoginRequested);
     on<AuthRegisterRequested>(_onAuthRegisterRequested);
   }
@@ -20,22 +20,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      final result = await authRepository.loginUser(
-        event.email,
-        event.password,
-      );
-
-      if (result is User) {
-        emit(AuthSuccess(user: result));
-      } else if (result == 1) {
-        emit(const AuthUserNotFoundError());
-      } else if (result == 2) {
-        emit(const AuthWrongPasswordError());
-      } else {
-        emit(const AuthGenericError());
-      }
+      await _authRepository.loginUser(event.email, event.password);
     } catch (e) {
-      emit(AuthGenericError());
+      emit(const AuthGenericError());
     }
   }
 
@@ -46,20 +33,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      final result = await authRepository.createUser(
-        event.email,
-        event.password,
-      );
-
-      if (result is User) {
-        emit(AuthSuccess(user: result));
-      } else if (result == 1) {
-        emit(const AuthWeakPasswordError());
-      } else if (result == 2) {
-        emit(const AuthEmailAlreadyInUseError());
-      } else {
-        emit(const AuthGenericError());
-      }
+      await _authRepository.createUser(event.email, event.password);
     } catch (e) {
       emit(const AuthGenericError());
     }
