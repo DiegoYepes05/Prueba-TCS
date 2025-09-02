@@ -18,7 +18,6 @@ class CreateReportsBloc extends Bloc<CreateReportsEvent, CreateReportsState> {
     Emitter<CreateReportsState> emit,
   ) async {
     try {
-      print(event.reportEntity);
       emit(LoadingReportsState());
       await _createReportsRepository.saveReport(event.reportEntity);
       emit(SuccessReportsState());
