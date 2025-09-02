@@ -1,4 +1,4 @@
 abstract class AuthRepositories {
-  Future createUser(String email, String password);
-  Future loginUser(String email, String password);
+  Future<void> createUser(String email, String password);
+  Future<void> loginUser(String email, String password);
 }

@@ -7,12 +7,12 @@ class AuthRepositoriesImpl extends AuthRepositories {
   AuthRepositoriesImpl({required this.datasource});
 
   @override
-  Future createUser(String email, String password) {
+  Future<void> createUser(String email, String password) {
     return datasource.createUser(email, password);
   }
 
   @override
-  Future loginUser(String email, String password) {
+  Future<void> loginUser(String email, String password) {
     return datasource.loginUser(email, password);
   }
 }

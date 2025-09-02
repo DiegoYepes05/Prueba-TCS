@@ -1,4 +1,3 @@
-// features/auth/presentation/bloc/auth_state.dart
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -6,7 +5,7 @@ abstract class AuthState extends Equatable {
   const AuthState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class AuthInitial extends AuthState {}
@@ -19,7 +18,7 @@ class AuthSuccess extends AuthState {
   const AuthSuccess({required this.user});
 
   @override
-  List<Object?> get props => [user];
+  List<Object?> get props => <Object?>[user];
 }
 
 class AuthError extends AuthState {
@@ -28,7 +27,7 @@ class AuthError extends AuthState {
   const AuthError({required this.message});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => <Object?>[message];
 }
 
 // Estados específicos para diferentes tipos de errores

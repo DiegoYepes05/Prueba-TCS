@@ -11,7 +11,7 @@ part 'app_state.dart';
 class AppBloc extends Bloc<AppEvent, AppState> {
   AppBloc({required AppRepository appRepository})
     : _appRepository = appRepository,
-      super(AppState()) {
+      super(const AppState()) {
     on<GetUser>(_onGetUser);
     on<AuthStatusChanged>(_onAuthStatusChanged);
   }
@@ -21,7 +21,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   void _onGetUser(GetUser event, Emitter<AppState> emit) {
     _subscription?.cancel();
-    _subscription = _appRepository.authStatus().listen((user) {
+    _subscription = _appRepository.authStatus().listen((User? user) {
       add(AuthStatusChanged(user));
     });
   }

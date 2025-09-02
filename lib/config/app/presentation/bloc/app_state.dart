@@ -6,7 +6,7 @@ class AppState extends Equatable {
   const AppState({this.authStatus = AuthStatus.initial, this.user});
   final AuthStatus authStatus;
   final User? user;
-  copyWith({AuthStatus? authStatus, User? user}) {
+  AppState copyWith({AuthStatus? authStatus, User? user}) {
     return AppState(
       authStatus: authStatus ?? this.authStatus,
       user: user ?? this.user,
@@ -14,5 +14,5 @@ class AppState extends Equatable {
   }
 
   @override
-  List<Object> get props => [authStatus];
+  List<Object> get props => <Object>[authStatus];
 }

@@ -1,10 +1,12 @@
-// features/auth/presentation/screens/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prueba_tcs/config/helpers/validators.dart';
 import 'package:prueba_tcs/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:prueba_tcs/features/auth/presentation/bloc/auth_event.dart';
 import 'package:prueba_tcs/features/auth/presentation/bloc/auth_state.dart';
+import 'package:prueba_tcs/features/auth/presentation/widgets/custom_filled_buttom.dart';
+import 'package:prueba_tcs/features/auth/presentation/widgets/custom_text_form_field.dart';
+import 'package:prueba_tcs/features/auth/presentation/widgets/register_link.dart';
 import 'package:prueba_tcs/features/service_locator.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -15,10 +17,12 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
@@ -32,162 +36,186 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<AuthBloc>(),
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Registrarse'), centerTitle: true),
-        body: BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is AuthError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          },
+    final Size size = MediaQuery.of(context).size;
+    final Color scaffoldBackgroundColor = Theme.of(
+      context,
+    ).scaffoldBackgroundColor;
 
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
+    return BlocProvider<AuthBloc>(
+      create: (BuildContext context) => sl<AuthBloc>(),
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (BuildContext context, AuthState state) {
+          if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        child: GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: Scaffold(
+            body: Container(
+              height: size.height,
+              width: double.infinity,
+              color: Colors.green[200],
               child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    const SizedBox(height: 80),
+
                     const Icon(
                       Icons.person_add_outlined,
-                      size: 80,
-                      color: Colors.blue,
+                      color: Colors.white,
+                      size: 100,
                     ),
-                    const SizedBox(height: 32),
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email),
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa tu email';
-                        }
-                        if (!RegExp(
-                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                        ).hasMatch(value)) {
-                          return 'Por favor ingresa un email válido';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      decoration: InputDecoration(
-                        labelText: 'Contraseña',
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
+                    const SizedBox(height: 80),
+
+                    Container(
+                      height: size.height - 260,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: scaffoldBackgroundColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(100),
+                          bottomRight: Radius.circular(100),
                         ),
-                        border: const OutlineInputBorder(),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa tu contraseña';
-                        }
-                        if (value.length < 6) {
-                          return 'La contraseña debe tener al menos 6 caracteres';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _confirmPasswordController,
-                      obscureText: _obscureConfirmPassword,
-                      decoration: InputDecoration(
-                        labelText: 'Confirmar Contraseña',
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureConfirmPassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscureConfirmPassword =
-                                  !_obscureConfirmPassword;
-                            });
-                          },
-                        ),
-                        border: const OutlineInputBorder(),
+                      child: _RegisterForm(
+                        formKey: _formKey,
+                        emailController: _emailController,
+                        passwordController: _passwordController,
+                        confirmPasswordController: _confirmPasswordController,
+                        obscurePassword: _obscurePassword,
+                        obscureConfirmPassword: _obscureConfirmPassword,
+                        togglePassword: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                        toggleConfirmPassword: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor confirma tu contraseña';
-                        }
-                        if (value != _passwordController.text) {
-                          return 'Las contraseñas no coinciden';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                    BlocBuilder<AuthBloc, AuthState>(
-                      builder: (context, state) {
-                        return SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: state is AuthLoading
-                                ? null
-                                : () {
-                                    if (_formKey.currentState!.validate()) {
-                                      context.read<AuthBloc>().add(
-                                        AuthRegisterRequested(
-                                          email: _emailController.text.trim(),
-                                          password: _passwordController.text,
-                                        ),
-                                      );
-                                    }
-                                  },
-                            child: state is AuthLoading
-                                ? const CircularProgressIndicator(
-                                    color: Colors.white,
-                                  )
-                                : const Text('Registrarse'),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('¿Ya tienes cuenta? '),
-                        TextButton(
-                          onPressed: () => context.go('/login'),
-                          child: const Text('Inicia Sesión'),
-                        ),
-                      ],
                     ),
                   ],
                 ),
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RegisterForm extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final TextEditingController confirmPasswordController;
+  final bool obscurePassword;
+  final bool obscureConfirmPassword;
+  final VoidCallback togglePassword;
+  final VoidCallback toggleConfirmPassword;
+
+  const _RegisterForm({
+    required this.formKey,
+    required this.emailController,
+    required this.passwordController,
+    required this.confirmPasswordController,
+    required this.obscurePassword,
+    required this.obscureConfirmPassword,
+    required this.togglePassword,
+    required this.toggleConfirmPassword,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme textStyles = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 50),
+      child: Form(
+        key: formKey,
+        child: Column(
+          children: <Widget>[
+            const SizedBox(height: 50),
+
+            Text(
+              'Registrarse',
+              style: textStyles.titleLarge?.copyWith(
+                color: Colors.green[200],
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 90),
+
+            CustomTextFormField(
+              prefixIcon: const Icon(Icons.email),
+              label: 'Correo electrónico',
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              validator: Validators.validateEmail,
+            ),
+            const SizedBox(height: 30),
+
+            CustomTextFormField(
+              label: 'Contraseña',
+              controller: passwordController,
+              obscureText: obscurePassword,
+              prefixIcon: const Icon(Icons.lock),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  obscurePassword ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: togglePassword,
+              ),
+              validator: Validators.validatePassword,
+            ),
+            const SizedBox(height: 30),
+
+            CustomTextFormField(
+              label: 'Confirmar Contraseña',
+              controller: confirmPasswordController,
+              obscureText: obscureConfirmPassword,
+              prefixIcon: const Icon(Icons.lock),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  obscureConfirmPassword
+                      ? Icons.visibility
+                      : Icons.visibility_off,
+                ),
+                onPressed: toggleConfirmPassword,
+              ),
+              validator: Validators.validatePassword,
+            ),
+            const SizedBox(height: 30),
+
+            CustomFilledButtom(
+              formKey: formKey,
+              emailController: emailController,
+              passwordController: passwordController,
+              isLogin: false,
+            ),
+
+            const Spacer(flex: 2),
+
+            RegisterLink(
+              route: '/login',
+              text: '¿Ya tienes cuenta? ',
+              secondaryText: 'INICIA SESIÓN',
+              onPressed: () => context.pop(),
+            ),
+
+            const Spacer(flex: 1),
+          ],
         ),
       ),
     );
