@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextFormField extends StatelessWidget {
+  final List<TextInputFormatter>? inputFormatters;
   final TextEditingController? controller;
   final bool? obscureText;
   final String? label;
   final Icon? prefixIcon;
   final Widget? suffixIcon;
   final TextInputType? keyboardType;
-  final String? Function(String?)? validator;
-
+  final String? Function(String? value)? validator;
+  final Function(String? value)? onSaved;
+  final Function()? onTap;
+  final bool? readOnly;
   const CustomTextFormField({
     this.label,
     this.prefixIcon,
@@ -18,6 +22,10 @@ class CustomTextFormField extends StatelessWidget {
     this.obscureText = false,
     this.validator,
     this.keyboardType,
+    this.onSaved,
+    this.onTap,
+    this.readOnly,
+    this.inputFormatters,
   });
 
   @override
@@ -48,6 +56,10 @@ class CustomTextFormField extends StatelessWidget {
         ],
       ),
       child: TextFormField(
+        inputFormatters: inputFormatters,
+        onSaved: onSaved,
+        onTap: onTap,
+        readOnly: readOnly ?? false,
         controller: controller,
         obscureText: obscureText ?? false,
         validator: validator,

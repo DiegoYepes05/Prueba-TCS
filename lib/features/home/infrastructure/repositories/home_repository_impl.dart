@@ -15,10 +15,7 @@ class HomeRepositoryImpl implements HomeRepository {
     final Stream<List<Map<String, dynamic>>> response = datasource.getReports();
     return response.asyncMap(
       (List<Map<String, dynamic>> listReport) => listReport
-          .map(
-            (Map<String, dynamic> report) =>
-                ReportMapper.reportTojsonEntity(report),
-          )
+          .map((Map<String, dynamic> report) => ReportMapper.fromJson(report))
           .toList(),
     );
   }
