@@ -1,40 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
 import 'package:prueba_tcs/config/extensions/stream_query_snapshots_extensions.dart';
-import 'package:prueba_tcs/features/home/domain/domain.dart';
+import 'package:prueba_tcs/features/home/domain/datasources/home_datasource.dart';
 
 class HomeDatasourceImpl implements HomeDatasource {
-  final FirebaseFirestore _firebase = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  String? get _uid => _auth.currentUser?.uid;
-  @override
-  Future<void> deleteReports(String id) async {
-    try {
-      await _firebase
-          .collection('users')
-          .doc(_uid)
-          .collection('reports')
-          .doc(id)
-          .delete();
-    } catch (e) {
-      throw Exception('Error al eliminar el reporte');
-    }
-  }
-
+  String? get userId => _auth.currentUser?.uid;
   @override
   Stream<List<Map<String, dynamic>>> getReports() {
     try {
-      final Stream<List<Map<String, dynamic>>> response = _firebase
+      return _firestore
           .collection('users')
-          .doc(_uid)
+          .doc(userId)
           .collection('reports')
           .snapshots()
           .toMap();
-      return response;
-    } catch (e, s) {
-      debugPrintStack(stackTrace: s);
-      throw Exception('Error al obetener el reporte');
+    } catch (e) {
+      throw Exception(e);
     }
   }
 }

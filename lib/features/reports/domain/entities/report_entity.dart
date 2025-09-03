@@ -1,11 +1,15 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 enum Category {
-  income(name: 'Ingresos'),
-  expense(name: 'Egresos');
+  income('Ingresos', Colors.green, Icons.arrow_circle_up_rounded),
+  expense('Egresos', Colors.red, Icons.arrow_circle_down_rounded);
 
-  const Category({required this.name});
+  const Category(this.name, this.color, this.icon);
+
   final String name;
+  final Color color;
+  final IconData icon;
 }
 
 class ReportEntity extends Equatable {
@@ -24,6 +28,7 @@ class ReportEntity extends Equatable {
     required this.date,
     required this.category,
   });
+
   ReportEntity.empty()
     : this(
         id: '',
@@ -41,14 +46,16 @@ class ReportEntity extends Equatable {
     double? amount,
     DateTime? date,
     Category? category,
-  }) => ReportEntity(
-    id: id ?? this.id,
-    title: title ?? this.title,
-    description: description ?? this.description,
-    amount: amount ?? this.amount,
-    date: date ?? this.date,
-    category: category ?? this.category,
-  );
+  }) {
+    return ReportEntity(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      amount: amount ?? this.amount,
+      date: date ?? this.date,
+      category: category ?? this.category,
+    );
+  }
 
   @override
   List<Object?> get props => <Object?>[
@@ -59,6 +66,7 @@ class ReportEntity extends Equatable {
     date,
     category,
   ];
+
   @override
   bool? get stringify => true;
 }

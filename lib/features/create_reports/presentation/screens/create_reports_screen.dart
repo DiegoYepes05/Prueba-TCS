@@ -8,7 +8,7 @@ import 'package:prueba_tcs/config/helpers/validators.dart';
 import 'package:prueba_tcs/features/auth/presentation/widgets/custom_text_form_field.dart';
 import 'package:prueba_tcs/features/auth/presentation/widgets/widgets.dart';
 import 'package:prueba_tcs/features/create_reports/presentation/bloc/create_reports_bloc.dart';
-import 'package:prueba_tcs/features/home/domain/domain.dart';
+import 'package:prueba_tcs/features/reports/domain/domain.dart';
 import 'package:prueba_tcs/features/service_locator.dart';
 
 class CreateReportsScreen extends StatefulWidget {
@@ -84,7 +84,10 @@ class _CreateReportsScreenState extends State<CreateReportsScreen> {
         listener: (BuildContext context, CreateReportsState state) {
           if (state is SuccessReportsState) {
             context
-              ..showSuccessToastification(message: 'Reporte creado con exito')
+              ..showSuccessToastification(
+                title: 'Creado exitosamente',
+                message: 'Reporte creado con exito',
+              )
               ..pop();
           }
         },
@@ -149,19 +152,22 @@ class _CreateReportsScreenState extends State<CreateReportsScreen> {
             ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerFloat,
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
-                if (_formKey.currentState?.validate() ?? false) {
-                  _formKey.currentState?.save();
-                  sl<CreateReportsBloc>().add(
-                    CreateReportsSaveEvent(reportEntity: _reportEntity),
-                  );
-                }
-              },
-              icon: const Icon(Icons.save, color: Colors.white),
-              label: const Text(
-                'Guardar',
-                style: TextStyle(color: Colors.white),
+            floatingActionButton: IgnorePointer(
+              ignoring: state is LoadingReportsState,
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    _formKey.currentState?.save();
+                    context.read<CreateReportsBloc>().add(
+                      CreateReportsSaveEvent(reportEntity: _reportEntity),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.save, color: Colors.white),
+                label: const Text(
+                  'Guardar',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
           );

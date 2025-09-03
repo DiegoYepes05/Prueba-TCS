@@ -13,10 +13,12 @@ class CustomTextFormField extends StatelessWidget {
   final Function(String? value)? onSaved;
   final Function()? onTap;
   final bool? readOnly;
+  final bool? enabled;
   const CustomTextFormField({
     this.label,
     this.prefixIcon,
     this.suffixIcon,
+    this.enabled,
     super.key,
     this.controller,
     this.obscureText = false,
@@ -58,6 +60,7 @@ class CustomTextFormField extends StatelessWidget {
       child: TextFormField(
         inputFormatters: inputFormatters,
         onSaved: onSaved,
+        enabled: enabled ?? true,
         onTap: onTap,
         readOnly: readOnly ?? false,
         controller: controller,

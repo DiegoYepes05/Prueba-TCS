@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prueba_tcs/features/create_reports/domain/repositories/create_reports_repository.dart';
-import 'package:prueba_tcs/features/home/domain/domain.dart';
+import 'package:prueba_tcs/features/reports/domain/domain.dart';
 
 part 'create_reports_event.dart';
 part 'create_reports_state.dart';

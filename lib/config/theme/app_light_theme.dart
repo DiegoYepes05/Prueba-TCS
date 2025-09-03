@@ -18,6 +18,9 @@ class AppLightTheme {
 
   static ThemeData _buildTheme(BuildContext context) {
     return ThemeData(
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.green[200],
+      ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: Colors.green[200],
       ),

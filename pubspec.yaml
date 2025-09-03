@@ -30,10 +30,12 @@ environment:
 dependencies:
   animated_segmented_tab_control: ^2.0.0
   cloud_firestore: ^6.0.1
+  collection: ^1.19.1
   cupertino_icons: ^1.0.8
   equatable: ^2.0.7
   firebase_auth: ^6.0.1
   firebase_core: ^4.0.0
+  fl_chart: ^0.69.0
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
