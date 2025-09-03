@@ -1,93 +1,145 @@
+import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:prueba_tcs/config/extensions/app_toastification_extension.dart';
-import 'package:prueba_tcs/features/home/domain/entities/report_entity.dart';
-import 'package:prueba_tcs/features/home/presentation/bloc/home_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:prueba_tcs/features/reports/domain/entities/report_entity.dart';
+import 'package:prueba_tcs/features/reports/presentation/bloc/reports_bloc.dart';
+import 'package:prueba_tcs/features/reports/presentation/screens/reports_list_screen.dart';
+import 'package:prueba_tcs/features/service_locator.dart';
 import 'package:shared/shared.dart';
 
 class ReportsScreen extends StatefulWidget {
-  final List<ReportEntity> reports;
-  const ReportsScreen({required this.reports, super.key});
+  const ReportsScreen({super.key});
 
   @override
   State<ReportsScreen> createState() => _ReportsScreenState();
 }
 
-class _ReportsScreenState extends State<ReportsScreen> {
+class _ReportsScreenState extends State<ReportsScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    tabController = TabController(length: 2, vsync: this);
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (widget.reports.isEmpty) {
-      return const Center(child: Text('No hay reportes'));
-    }
-    return BlocConsumer<HomeBloc, HomeState>(
-      listener: (BuildContext context, HomeState state) {
-        switch (state.deleteReportStatus) {
-          case Status.error:
-            context.showErrorToastification(message: state.error);
-            break;
-          case Status.success:
-            context.showSuccessToastification(message: 'Reporte eliminado');
-            break;
-          default:
-            break;
-        }
-      },
-      builder: (BuildContext context, HomeState state) {
-        return ListView.separated(
-          itemCount: widget.reports.length,
-          itemBuilder: (BuildContext context, int index) {
-            final ReportEntity report = widget.reports[index];
-            return Dismissible(
-              onDismissed: (DismissDirection direction) {
-                showAdaptiveDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog.adaptive(
-                      title: const Text('Eliminar reporte'),
-                      content: const Text(
-                        '¿Estas seguro de eliminar el reporte?',
+    return BlocProvider<ReportsBloc>(
+      create: (BuildContext context) => sl<ReportsBloc>()..add(GetReports()),
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: const Text('Reportes', style: TextStyle(color: Colors.white)),
+
+          bottom: PreferredSize(
+            preferredSize: const Size(double.infinity, 50),
+            child: BlocSelector<ReportsBloc, ReportsState, Status>(
+              selector: (ReportsState state) {
+                return state.reportStatus;
+              },
+              builder: (BuildContext context, Status state) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  child: SegmentedTabControl(
+                    controller: tabController,
+                    tabTextColor: Colors.black87,
+                    selectedTabTextColor: Colors.white,
+                    squeezeIntensity: 2,
+
+                    barDecoration: BoxDecoration(
+                      color: Colors.green[100],
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: const <BoxShadow>[
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+
+                    tabs: <SegmentTab>[
+                      SegmentTab(
+                        label: 'INGRESOS',
+                        color: Colors.green[400],
+                        backgroundColor: Colors.green[50],
                       ),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancelar'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            context.read<HomeBloc>().add(
-                              DeleteReport(report.id),
-                            );
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Eliminar'),
-                        ),
+                      SegmentTab(
+                        label: 'EGRESOS',
+                        color: Colors.red[400],
+                        backgroundColor: Colors.red[50],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        body:
+            BlocSelector<
+              ReportsBloc,
+              ReportsState,
+              (List<ReportEntity>, Status, String)
+            >(
+              selector: (ReportsState state) {
+                return (state.reports, state.reportStatus, state.error);
+              },
+              builder:
+                  (
+                    BuildContext context,
+                    (List<ReportEntity>, Status, String) state,
+                  ) {
+                    final List<ReportEntity> incomeReports = state.$1
+                        .where(
+                          (ReportEntity report) =>
+                              report.category == Category.income,
+                        )
+                        .toList();
+                    final List<ReportEntity> expenseReports = state.$1
+                        .where(
+                          (ReportEntity report) =>
+                              report.category == Category.expense,
+                        )
+                        .toList();
+                    if (state.$2 == Status.loading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (state.$2 == Status.error) {
+                      return Center(child: Text(state.$3));
+                    }
+                    return TabBarView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      controller: tabController,
+                      children: <Widget>[
+                        ReportsListScreen(reports: incomeReports),
+                        ReportsListScreen(reports: expenseReports),
                       ],
                     );
                   },
-                );
-              },
-              key: ValueKey<String>(report.id),
-              direction: DismissDirection.startToEnd,
-              background: Container(
-                padding: const EdgeInsets.only(left: 8.0),
-                color: Colors.red[400],
-                child: const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Elimnar', style: TextStyle(color: Colors.white)),
-                ),
-              ),
-              child: ListTile(
-                title: Text(report.title),
-                subtitle: Text(report.amount.toString()),
-                trailing: Icon(Icons.edit_document, color: Colors.green[200]),
-              ),
-            );
+            ),
+        floatingActionButton: FloatingActionButton.extended(
+          elevation: 0,
+          onPressed: () {
+            switch (tabController.index) {
+              case 0:
+                context.push('/reports/create/0');
+                break;
+              case 1:
+                context.push('/reports/create/1');
+                break;
+            }
           },
-          separatorBuilder: (BuildContext context, int index) {
-            return const Divider();
-          },
-        );
-      },
+          label: const Text('Crear', style: TextStyle(color: Colors.white)),
+          icon: const Icon(Icons.add, color: Colors.white),
+        ),
+      ),
     );
   }
 }

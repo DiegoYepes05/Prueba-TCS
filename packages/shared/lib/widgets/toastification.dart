@@ -34,12 +34,14 @@ class AppToastification {
     String? title,
     required ToastificationType type,
   }) {
-    // final ThemeData theme = Theme.of(context);
     toastification
       ..dismissAll()
       ..show(
         context: context,
         title: Text(title ?? ''),
+        autoCloseDuration: const Duration(milliseconds: 2500),
+        animationDuration: const Duration(milliseconds: 1000),
+        showProgressBar: true,
         description: Text(message),
         type: type,
         showIcon: true,

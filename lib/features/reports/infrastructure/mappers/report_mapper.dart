@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:prueba_tcs/features/home/domain/domain.dart';
+import 'package:prueba_tcs/features/reports/domain/domain.dart';
 
 class ReportMapper extends ReportEntity {
   const ReportMapper({
@@ -13,6 +13,7 @@ class ReportMapper extends ReportEntity {
 
   static ReportEntity fromJson(Map<String, dynamic> json) {
     final Timestamp timestamp = json['date'] as Timestamp;
+
     return ReportMapper(
       id: json['id'],
       title: json['title'],
@@ -25,7 +26,6 @@ class ReportMapper extends ReportEntity {
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'id': id,
       'title': title,
       'description': description,
       'amount': amount,

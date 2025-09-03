@@ -29,7 +29,7 @@ class _AppScreenState extends State<AppScreen> {
         builder: (BuildContext context, AppState state) {
           return MaterialApp.router(
             theme: AppLightTheme.instance,
-            darkTheme: AppDarkTheme.instance,
+
             title: 'Prueba TCS',
             debugShowCheckedModeBanner: false,
             routerConfig: AppRouter().appRouter,

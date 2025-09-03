@@ -7,14 +7,9 @@ sealed class HomeEvent extends Equatable {
   List<Object> get props => <Object>[];
 }
 
-class GetReports extends HomeEvent {}
+class HomeEventGetReports extends HomeEvent {}
 
-class SuccessReports extends HomeEvent {
+class HomeEventSetReports extends HomeEvent {
   final List<ReportEntity> reports;
-  const SuccessReports(this.reports);
-}
-
-class DeleteReport extends HomeEvent {
-  final String id;
-  const DeleteReport(this.id);
+  const HomeEventSetReports({required this.reports});
 }
